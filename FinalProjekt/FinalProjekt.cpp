@@ -1,8 +1,10 @@
 ﻿#include <chrono>
+#include <fstream>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -68,6 +70,14 @@ void prohanie() {
 }
 
 int main() {
+
+    ifstream inputFile("babuska_ozenka.txt");
+
+    if (!inputFile) {
+        cerr << "Введите оценку бабушки" << endl;
+        return 1;
+    }
+
     setlocale(LC_ALL, "Ru");
 
     hallo();
