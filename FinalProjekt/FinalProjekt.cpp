@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <windows.h>
 
 using namespace std;
 
@@ -28,10 +29,11 @@ string vopros() {
 string getCurrentTime() {
     auto now = chrono::system_clock::now();
     time_t currentTime = chrono::system_clock::to_time_t(now);
-    tm localTime = *localtime(&currentTime);
+    tm localTime;
+    localtime_s(&localTime, &currentTime); // функция localtime_s предотвращает переполнения в буфере и для коректной работы кода
 
     ostringstream oss;
-    oss << put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+    oss << put_time(&localTime, "%Y-%m-%d %H:%M:%S"); 
     return oss.str();
 }
 
@@ -42,6 +44,8 @@ void poisk_internet(const string& bot_help_babuhka) {
         cout << "Сегодня 37 градусов тепла." << endl;
         cout << "завтра 35 градусов тепла." << endl;
     }
+   
+    
     if (bot_help_babuhka.find("новости") != string::npos) {
         cout
             << "27 июня к бывшему заместителю главы Офис президента Кириллу "
@@ -52,38 +56,48 @@ void poisk_internet(const string& bot_help_babuhka) {
             << endl;
     }
 
+    
+
     if (bot_help_babuhka.find("какое сейчас время?") != string::npos) {
         cout << getCurrentTime() << endl;
     }
 
-    else {
-        cout << "Найдено столько результатов:" << endl;
-        cout << " Результат 1 для Бабушки" << endl;
-        cout << " Результат 2 для бабушки" << endl;
-        cout << " Результат 3 для бабушки" << endl;
-    }
 }
 
 void prohanie() {
-    cout << "Спасибо, что воспользовались мной шлю..))) сегодня! Хорошего дня!"
-        << endl;
+    cout << "Спасибо, что воспользовались мной сегодня! Хорошего дня!" << endl;
 }
 
 int main() {
+    SetConsoleOutputCP(1251);
+    SetConsoleCP(1251);
 
-    ifstream inputFile("babuska_ozenka.txt");
+    // задан вопрос
+    cout << "Что вы думаете о бабушке? ";
+    string answer;
+    getline(cin, answer);
 
-    if (!inputFile) {
-        cerr << "Введите оценку бабушки" << endl;
-        return 1;
+    
+    ofstream outputFile("babuska_ozenka.txt", ios::app);
+    if (outputFile.is_open()) {
+        outputFile << answer << endl;
+        outputFile.close();
+        cout << "Ваша оценка была записана." << endl;
     }
+    else {
+        cout << "Ошибка при открытии файла для записи." << endl;
+    }
+
+    // взаимодействие с бабушкой
+    string bot_help_babuhka_input = vopros();
+    poisk_internet(bot_help_babuhka_input);
 
     setlocale(LC_ALL, "Ru");
 
     hallo();
 
-    string bot_help_babuhka = vopros();
-    poisk_internet(bot_help_babuhka);
+    bot_help_babuhka_input = vopros();
+    poisk_internet(bot_help_babuhka_input);
 
     prohanie();
 
